@@ -1,4 +1,43 @@
-var object, water, clock;
+var object, object2;
+
+function loadModel() {
+
+};
+
+var manager = new THREE.LoadingManager( loadModel );
+
+manager.onProgress = function ( item, loaded, total ) {
+
+  console.log( item, loaded, total );
+
+  if (loaded === total) {
+    runner();
+  }
+
+};
+
+
+function onError() {}
+function onProgress() {}
+
+var loader = new THREE.OBJLoader(manager);
+
+loader.load( 'archipelago.obj', function ( obj ) {
+
+  object = obj;
+
+}, onProgress, onError );
+
+loader.load( 'beaches.obj', function ( obj ) {
+
+  object2 = obj;
+
+}, onProgress, onError );
+
+
+function runner() {
+
+var water, clock;
 
 var params = {
   color: '#eeeeef',
@@ -45,12 +84,12 @@ cubeMesh.material = equirectMaterial;
 cubeMesh.visible = true;
 
 var material = new THREE.MeshPhysicalMaterial( {
-  color: 0,
-  metalness: 0.6,
-  roughness: 0.7,
-  clearCoat: 0.11 ,
-  clearCoatRoughness: 0.2 ,
-  reflectivity: 0.9 ,
+  color: 0x020202,
+  metalness: 0.25,
+  roughness: 0.1,
+  clearCoat: 0.41 ,
+  clearCoatRoughness: 0.3 ,
+  reflectivity: 0.4,
   envMap: textureEquirec
 });
 
@@ -63,58 +102,6 @@ var material2 = new THREE.MeshPhysicalMaterial( {
   reflectivity: 0.9 ,
   envMap: textureEquirec
 });
-
-var object, object2;
-
-function loadModel() {
-
-  object.traverse( function ( child ) {
-
-    if ( child.isMesh ) child.material = material;
-
-  });
-
-  object.position.y = 0;
-  object.scale = new THREE.Vector3(2.1,1.1,2.2);
-  scene.add( object );
-
-  object2.traverse( function ( child ) {
-
-    if ( child.isMesh ) child.material = material2;
-
-  });
-
-  object2.position.y = 100;
-  object2.position.x = 20;
-  // Exclude for now.
-  //scene.add( object2 );
-  //object2.scale = new THREE.Vector3(2.2,0.1,2.9);
-
-};
-
-var manager = new THREE.LoadingManager( loadModel );
-
-manager.onProgress = function ( item, loaded, total ) {
-
-  console.log( item, loaded, total );
-
-};
-
-var loader = new THREE.OBJLoader(manager);
-
-
-function onError() {}
-function onProgress() {}
-
-var loader = new THREE.OBJLoader( manager );
-
-loader.load( 'archipelago.obj', function ( obj ) {
-
-  object = obj.clone();
-  object2 = obj.clone();
-
-}, onProgress, onError );
-
 
 const N = 256;
 const gData = {
@@ -130,6 +117,7 @@ const gData = {
 
 
 const graph = ForceGraph3D()
+
 (document.getElementById('graph-3d'))
   .graphData(gData)
   .onNodeHover(node => document.getElementById('graph-3d').style.cursor = node ? 'pointer' : null)
@@ -147,6 +135,16 @@ const graph = ForceGraph3D()
       3000  // ms transition duration
     );
   });
+
+var zNear = 10;
+var zFar = 3500000;
+
+var cam = graph.camera();
+cam.far = (zFar);
+cam.near = (zNear);
+cam.aspect = (window.innerWidth / window.innerHeight);
+cam.updateProjectionMatrix();
+
 
 
 const planeGeometry = new THREE.PlaneGeometry(1000, 1000, 1, 1);
@@ -244,12 +242,24 @@ scene.add( water );
 scene.add( water2 );
 scene.fog = new THREE.FogExp2( 0x000000, 0.00005, 20000);
 
-/*
-window.setTimeout(function() {
+  object.traverse( function ( child ) {
 
-  water.material.uniforms.time.value += 1.0 / 60.0;
-  water2.material.uniforms.time.value += 1.0 / 60.0;
-  graph.renderer().render( graph.scene(), graph.camera() );
+    if ( child.isMesh ) child.material = material;
 
-}, 16);
-*/
+  });
+
+  object.position.y = 10;
+  object.scale.set(3,2,3); 
+  scene.add( object );
+
+  object2.traverse( function ( child ) {
+
+    if ( child.isMesh ) child.material = material2;
+
+  });
+
+  object2.position.y = 10;
+  object2.scale.set(3,2,3); 
+  scene.add( object2 );
+
+}
