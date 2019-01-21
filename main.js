@@ -74,7 +74,7 @@ function loadModel() {
 
   });
 
-  object.position.y = 100;
+  object.position.y = 0;
   object.scale = new THREE.Vector3(2.1,1.1,2.2);
   scene.add( object );
 
@@ -84,10 +84,11 @@ function loadModel() {
 
   });
 
-  object2.position.y = 90;
-  object2.scale = new THREE.Vector3(2.2,0.1,9.9);
+  object2.position.y = 100;
+  object2.position.x = 20;
   // Exclude for now.
   //scene.add( object2 );
+  //object2.scale = new THREE.Vector3(2.2,0.1,2.9);
 
 };
 
@@ -107,7 +108,7 @@ function onProgress() {}
 
 var loader = new THREE.OBJLoader( manager );
 
-loader.load( 'island.obj', function ( obj ) {
+loader.load( 'archipelago.obj', function ( obj ) {
 
   object = obj.clone();
   object2 = obj.clone();
@@ -161,7 +162,7 @@ scene.add( ambient );
 var size = 8000;
 var divisions = 100;
 
-var gridHelper = new THREE.GridHelper( size, divisions, 0x111111, 0x111111 );
+var gridHelper = new THREE.GridHelper( size, divisions, 0x999999, 0x999999 );
 var geometry = new THREE.CircleGeometry( 4000, 128 );
 
 var directionalLight = new THREE.DirectionalLight( 0xffffff, 1.0 );
