@@ -124,6 +124,7 @@ function runner() {
     .backgroundColor("#000000")
     .showNavInfo(false)
     .linkVisibility(false)
+  .cameraPosition({z: 100, y: 100, x: -2400})
     .onNodeClick(node => {
       // Aim at node from outside it
       const distance = 40;
@@ -143,6 +144,7 @@ function runner() {
   cam.far = (zFar);
   cam.near = (zNear);
   cam.aspect = (window.innerWidth / window.innerHeight);
+  cam.fov = 64;
   cam.updateProjectionMatrix();
 
 
@@ -234,5 +236,15 @@ function runner() {
   object2.position.y = 10;
   object2.scale.set(3,2,3); 
   scene.add( object2 );
+
+/*  {
+      let distance = 2000;
+      let distRatio = 1 + distance/Math.hypot(object.position.x, object.position.y, object.position.z);
+
+      graph.cameraPosition(
+        { x: object.position.x * distRatio, y: object.position.y * distRatio, z: object.position.z * distRatio }, // new position
+        object
+      );
+  } */
 
 }
