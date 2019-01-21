@@ -164,7 +164,7 @@ function runner() {
   var geometry = new THREE.CircleGeometry( 4000, 128 );
 
   var directionalLight = new THREE.DirectionalLight( 0x666666, 1.0 );
-  directionalLight.position.set( 2000 * 2, 500 * 2, -2000 * 2);
+  directionalLight.position.set( 2000 * 2, 256 * 2, -100 * 2);
   scene.add( directionalLight );
 
   water = new THREE.Water(
@@ -199,7 +199,7 @@ function runner() {
       sunDirection: directionalLight.position.clone().normalize(),
       sunColor: 0xffffff,
       waterColor: 0x000000,
-      distortionScale: 6.7,
+      distortionScale: 60.7,
       fog: scene.fog !== undefined
     }
   );
