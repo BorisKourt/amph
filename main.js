@@ -124,7 +124,7 @@ function runner() {
     .backgroundColor("#000000")
     .showNavInfo(false)
     .linkVisibility(false)
-  .cameraPosition({z: 100, y: 100, x: -2400})
+  .cameraPosition({z: 610, y: 90, x: -1800})
     .onNodeClick(node => {
       // Aim at node from outside it
       const distance = 40;
