@@ -84,7 +84,7 @@ cubeMesh.material = equirectMaterial;
 cubeMesh.visible = true;
 
 var material = new THREE.MeshPhysicalMaterial( {
-  color: 0x020202,
+  color: 0x040404,
   metalness: 0.25,
   roughness: 0.1,
   clearCoat: 0.41 ,
@@ -94,12 +94,12 @@ var material = new THREE.MeshPhysicalMaterial( {
 });
 
 var material2 = new THREE.MeshPhysicalMaterial( {
-  color: 0x999999,
-  metalness: 0.6,
-  roughness: 0.7,
-  clearCoat: 0.11 ,
-  clearCoatRoughness: 0.2 ,
-  reflectivity: 0.9 ,
+  color: 0x606060,
+  metalness: 0.05,
+  roughness: 0.9,
+  clearCoat: 0.0,
+  clearCoatRoughness: 0.2,
+  reflectivity: 0.1,
   envMap: textureEquirec
 });
 
