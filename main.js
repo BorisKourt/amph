@@ -100,7 +100,7 @@ function runner() {
   });
 
   var material2 = new THREE.MeshPhysicalMaterial( {
-    color: 0x606060,
+    color: 0x909090,
     metalness: 0.05,
     roughness: 0.9,
     clearCoat: 0.0,
@@ -115,7 +115,7 @@ function runner() {
     roughness: 0.9,
     clearCoat: 0.6,
     clearCoatRoughness: 0.2,
-    reflectivity: 0.2,
+    reflectivity: 0.9,
     side: THREE.DoubleSide,
     envMap: textureEquirec
   });
@@ -268,7 +268,7 @@ function runner() {
       alpha: 0.3,
       sunDirection: directionalLight.position.clone().normalize(),
       sunColor: 0xffffff,
-      waterColor: 0x12191f,
+      waterColor: 0x22292f,
       distortionScale: 60.7,
       fog: scene.fog !== undefined
     }
