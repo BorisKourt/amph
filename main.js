@@ -131,6 +131,17 @@ function runner() {
     envMap: textureEquirec
   });
 
+  var material5 = new THREE.MeshPhysicalMaterial( {
+    color: 0x00ffff,
+    metalness: 0.0,
+    roughness: 0.9,
+    clearCoat: 0.2,
+    clearCoatRoughness: 0.2,
+    reflectivity: 0.3,
+    side: THREE.DoubleSide,
+    envMap: textureEquirec
+  });
+
   object3.scale.set(15.5,15.5,15.5); 
   object3.rotation.set(Math.PI / 2,0,0);
 
@@ -155,13 +166,15 @@ function runner() {
   const imgTexture2 = new THREE.TextureLoader().load(`default2.jpg`);
   imgTexture2.anisotropy = 1;
 
+  let highlightNodes = [];
+  let highlightLink = null;
+
   const graph = ForceGraph3D()(document.getElementById('graph-3d')) 
     .graphData(gData)
-    .onNodeHover(node => document.getElementById('graph-3d').style.cursor = node ? 'pointer' : null)
     .backgroundColor("#000000")
     .showNavInfo(false)
     .linkVisibility(false)
-    .cameraPosition({z: 610, y: 90, x: -1800})
+    .cameraPosition({z: -2310, y: 135, x: -2200})
     .nodeThreeObject(node => {
       if (node.id % 2 == 0) {
         const obj = new THREE.Mesh(
@@ -170,12 +183,19 @@ function runner() {
         );
         obj.rotation.set(0, node.rotation, 0);
         const ox = object3.clone();
+        if (highlightNodes.indexOf(node) === -1)  { 
 
-        ox.traverse( function ( child ) {
+          ox.traverse( function ( child ) {
+            if ( child.isMesh ) child.material = material3;
+          });
 
-          if ( child.isMesh ) child.material = material3;
+        } else {
 
-        });
+          ox.traverse( function ( child ) {
+            if ( child.isMesh ) child.material = material5;
+          });
+
+        }
 
         obj.add(ox);
         return obj;
@@ -187,16 +207,30 @@ function runner() {
         obj2.rotation.set(0, node.rotation, 0);
         const ox = object3.clone();
 
-        ox.traverse( function ( child ) {
+        if (highlightNodes.indexOf(node) === -1)  { 
 
-          if ( child.isMesh ) child.material = material4;
+          ox.traverse( function ( child ) {
+            if ( child.isMesh ) child.material = material4;
+          });
 
-        });
+        } else {
+
+          ox.traverse( function ( child ) {
+            if ( child.isMesh ) child.material = material5;
+          });
+
+        }
 
         obj2.add(ox);
         return obj2;
       }
     })
+  .onNodeHover(node => {
+     document.getElementById('graph-3d').style.cursor = node ? 'pointer' : null     // no state change
+          if ((!node && !highlightNodes.length) || (highlightNodes.length === 1 && highlightNodes[0] === node)) return;
+          highlightNodes = node ? [node] : [];
+          updateGeometries();
+        })
     .onNodeClick(node => {
       // Aim at node from outside it
       const distance = 32;
@@ -208,6 +242,10 @@ function runner() {
         3000  // ms transition duration
       );
     });
+
+  function updateGeometries() {
+      graph.nodeRelSize(4); // trigger update of 3d objects in scene
+  }
 
   const linkForce = graph
       .d3Force('link')
@@ -292,7 +330,8 @@ function runner() {
   });
 
   object.position.y = 16;
-  object.scale.set(3,2,3); 
+  object.rotation.y = Math.PI / 2;
+  object.scale.set(4.5,2.6,4.5); 
   scene.add( object );
 
   object2.traverse( function ( child ) {
@@ -302,7 +341,8 @@ function runner() {
   });
 
   object2.position.y = 16;
-  object2.scale.set(3,2,3); 
+  object2.scale.set(4.5,2.6,4.5); 
+  object2.rotation.y = Math.PI / 2;
   scene.add( object2 );
 
 
