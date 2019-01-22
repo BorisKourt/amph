@@ -1,4 +1,4 @@
-var object, object2;
+var object, object2, object3;
 
 function loadModel() {
 
@@ -31,6 +31,12 @@ loader.load( 'archipelago.obj', function ( obj ) {
 loader.load( 'beaches.obj', function ( obj ) {
 
   object2 = obj;
+
+}, onProgress, onError );
+
+loader.load( 'blorb.obj', function ( obj ) {
+
+  object3 = obj;
 
 }, onProgress, onError );
 
@@ -88,7 +94,7 @@ function runner() {
     metalness: 0.25,
     roughness: 0.6,
     clearCoat: 0.41 ,
-    clearCoatRoughness: 0.3 ,
+    clearCoatRoughness: 0.3,
     reflectivity: 0.2,
     envMap: textureEquirec
   });
@@ -103,9 +109,37 @@ function runner() {
     envMap: textureEquirec
   });
 
-  const N = 256;
+  var material3 = new THREE.MeshPhysicalMaterial( {
+    color: 0x000000,
+    metalness: 0.4,
+    roughness: 0.9,
+    clearCoat: 0.6,
+    clearCoatRoughness: 0.2,
+    reflectivity: 0.2,
+    side: THREE.DoubleSide,
+    envMap: textureEquirec
+  });
+
+  var material4 = new THREE.MeshPhysicalMaterial( {
+    color: 0x000000,
+    metalness: 0.2,
+    roughness: 0.2,
+    clearCoat: 0.2,
+    clearCoatRoughness: 0.2,
+    reflectivity: 0.3,
+    side: THREE.DoubleSide,
+    envMap: textureEquirec
+  });
+
+  object3.scale.set(15.5,15.5,15.5); 
+  object3.rotation.set(Math.PI / 2,0,0);
+
+  const N = 64;
   const gData = {
-    nodes: [...Array(N).keys()].map(i => ({ id: i })),
+    nodes: [...Array(N).keys()].map(i => ({ 
+      id: i,
+      rotation: (Math.random() * (Math.PI * 2.0))
+    })),
     links: [...Array(N).keys()]
     .filter(id => id)
     .map(id => ({
@@ -115,19 +149,57 @@ function runner() {
   };
 
 
+  const imgTexture = new THREE.TextureLoader().load(`default.jpg`);
+  imgTexture.anisotropy = 1;
 
-  const graph = ForceGraph3D()
+  const imgTexture2 = new THREE.TextureLoader().load(`default2.jpg`);
+  imgTexture2.anisotropy = 1;
 
-  (document.getElementById('graph-3d'))
+  const graph = ForceGraph3D()(document.getElementById('graph-3d')) 
     .graphData(gData)
     .onNodeHover(node => document.getElementById('graph-3d').style.cursor = node ? 'pointer' : null)
     .backgroundColor("#000000")
     .showNavInfo(false)
     .linkVisibility(false)
-  .cameraPosition({z: 610, y: 90, x: -1800})
+    .cameraPosition({z: 610, y: 90, x: -1800})
+    .nodeThreeObject(node => {
+      if (node.id % 2 == 0) {
+        const obj = new THREE.Mesh(
+          new THREE.CircleGeometry( 16, 32),
+          new THREE.MeshLambertMaterial( { color: 0xffffff, map: imgTexture, side: THREE.DoubleSide} )
+        );
+        obj.rotation.set(0, node.rotation, 0);
+        const ox = object3.clone();
+
+        ox.traverse( function ( child ) {
+
+          if ( child.isMesh ) child.material = material3;
+
+        });
+
+        obj.add(ox);
+        return obj;
+      } else {
+        const obj2 = new THREE.Mesh(
+          new THREE.CircleGeometry( 16, 32),
+          new THREE.MeshLambertMaterial( { color: 0xffffff, map: imgTexture2, side: THREE.DoubleSide} )
+        );
+        obj2.rotation.set(0, node.rotation, 0);
+        const ox = object3.clone();
+
+        ox.traverse( function ( child ) {
+
+          if ( child.isMesh ) child.material = material4;
+
+        });
+
+        obj2.add(ox);
+        return obj2;
+      }
+    })
     .onNodeClick(node => {
       // Aim at node from outside it
-      const distance = 40;
+      const distance = 32;
       const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
 
       graph.cameraPosition(
@@ -136,6 +208,13 @@ function runner() {
         3000  // ms transition duration
       );
     });
+
+  const linkForce = graph
+      .d3Force('link')
+      .distance(link => 700);
+
+
+  var renderer = graph.renderer();
 
   var zNear = 10;
   var zFar = 3500000;
@@ -147,27 +226,17 @@ function runner() {
   cam.fov = 64;
   cam.updateProjectionMatrix();
 
-
-
-  const planeGeometry = new THREE.PlaneGeometry(1000, 1000, 1, 1);
-  const planeMaterial = new THREE.MeshLambertMaterial({color: 0xFF0000, side: THREE.DoubleSide});
-  // Add the island.
-  const mesh = new THREE.Mesh(planeGeometry, material);
-  mesh.position.set(-100, -200, -100);
-  mesh.rotation.set(0.5 * Math.PI, 0, 0);
-
-  var ambient = new THREE.AmbientLight( 0xffffff );
-  scene.add( ambient );
-
   var size = 8000;
   var divisions = 100;
 
   var gridHelper = new THREE.GridHelper( size, divisions, 0x999999, 0x999999 );
-  var geometry = new THREE.CircleGeometry( 4000, 128 );
 
   var directionalLight = new THREE.DirectionalLight( 0x666666, 1.0 );
   directionalLight.position.set( 2000 * 2, 256 * 2, -100 * 2);
+  directionalLight.castShadow = true;
   scene.add( directionalLight );
+
+  var geometry = new THREE.CircleGeometry( 4000, 128 );
 
   water = new THREE.Water(
     geometry,
@@ -178,10 +247,9 @@ function runner() {
         texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
       } ),
       alpha: 0.5,
-      //sunDirection: //new THREE.Vector3( 2000, 2000, 2000 ).normalize(), //Math.PI/2, //light.position.clone().normalize(),
-      sunDirection: directionalLight.position.clone().normalize(),
       sunColor: 0xffffff,
-      waterColor: 0x000001,
+      sunDirection: directionalLight.position.clone().normalize(),
+      waterColor: 0x0f0f1c,
       distortionScale: 60.7,
       fog: scene.fog !== undefined
     }
@@ -200,7 +268,7 @@ function runner() {
       alpha: 0.3,
       sunDirection: directionalLight.position.clone().normalize(),
       sunColor: 0xffffff,
-      waterColor: 0x000000,
+      waterColor: 0x12191f,
       distortionScale: 60.7,
       fog: scene.fog !== undefined
     }
@@ -223,7 +291,7 @@ function runner() {
 
   });
 
-  object.position.y = 10;
+  object.position.y = 16;
   object.scale.set(3,2,3); 
   scene.add( object );
 
@@ -233,9 +301,11 @@ function runner() {
 
   });
 
-  object2.position.y = 10;
+  object2.position.y = 16;
   object2.scale.set(3,2,3); 
   scene.add( object2 );
+
+
 
 /*  {
       let distance = 2000;
