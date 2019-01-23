@@ -110,8 +110,8 @@ function runner() {
   });
 
   var material3 = new THREE.MeshPhysicalMaterial( {
-    color: 0x000000,
-    metalness: 0.4,
+    color: 0x18A1f2,
+    metalness: 0.0,
     roughness: 0.9,
     clearCoat: 0.6,
     clearCoatRoughness: 0.2,
@@ -142,7 +142,7 @@ function runner() {
     envMap: textureEquirec
   });
 
-  object3.scale.set(15.5,15.5,15.5); 
+  object3.scale.set(15.5 * 2,15.5 * 2,15.5 * 2); 
   object3.rotation.set(Math.PI / 2,0,0);
 
   const N = 64;
@@ -178,7 +178,7 @@ function runner() {
     .nodeThreeObject(node => {
       if (node.id % 2 == 0) {
         const obj = new THREE.Mesh(
-          new THREE.CircleGeometry( 16, 32),
+          new THREE.CircleGeometry( 16 * 2, 32),
           new THREE.MeshLambertMaterial( { color: 0xffffff, map: imgTexture, side: THREE.DoubleSide} )
         );
         obj.rotation.set(0, node.rotation, 0);
@@ -201,7 +201,7 @@ function runner() {
         return obj;
       } else {
         const obj2 = new THREE.Mesh(
-          new THREE.CircleGeometry( 16, 32),
+          new THREE.CircleGeometry( 16 * 2, 32),
           new THREE.MeshLambertMaterial( { color: 0xffffff, map: imgTexture2, side: THREE.DoubleSide} )
         );
         obj2.rotation.set(0, node.rotation, 0);
@@ -226,10 +226,12 @@ function runner() {
       }
     })
   .onNodeHover(node => {
+    /*
      document.getElementById('graph-3d').style.cursor = node ? 'pointer' : null     // no state change
           if ((!node && !highlightNodes.length) || (highlightNodes.length === 1 && highlightNodes[0] === node)) return;
           highlightNodes = node ? [node] : [];
           updateGeometries();
+          */
         })
     .onNodeClick(node => {
       // Aim at node from outside it
@@ -249,7 +251,7 @@ function runner() {
 
   const linkForce = graph
       .d3Force('link')
-      .distance(link => 700);
+      .distance(link => 900);
 
 
   var renderer = graph.renderer();
