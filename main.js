@@ -85,7 +85,7 @@ function runner() {
 
   } );
 
-  cubeMesh = new THREE.Mesh( new THREE.SphereBufferGeometry( 4000, 128, 128), equirectMaterial);
+  cubeMesh = new THREE.Mesh( new THREE.SphereBufferGeometry( 4000, 48, 48), equirectMaterial);
   cubeMesh.material = equirectMaterial;
   cubeMesh.visible = true;
 
@@ -172,7 +172,7 @@ function runner() {
   const graph = ForceGraph3D({controlType: "orbit"})(document.getElementById('graph-3d')) 
     .graphData(gData)
     .enableNodeDrag(false)
-    .backgroundColor("#000000")
+    .backgroundColor("rgba(0,0,0,0)")
     .showNavInfo(false)
     .linkVisibility(false)
   //.cooldownTime(Infinity)
