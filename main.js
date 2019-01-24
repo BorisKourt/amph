@@ -356,7 +356,7 @@ var radials = 16;
 var circles = 8;
 var divisions = 256;
 
-var helper = new THREE.PolarGridHelper( radius, radials, circles, divisions, 0x222222, 0x262626  );
+var helper = new THREE.PolarGridHelper( radius, radials, circles, divisions, 0x011D24, 0x011D24);
   helper.position.y = -0.005;
 scene.add( helper );
 
