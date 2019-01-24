@@ -85,7 +85,7 @@ function runner() {
 
   } );
 
-  cubeMesh = new THREE.Mesh( new THREE.SphereBufferGeometry( 4000, 32, 32), equirectMaterial);
+  cubeMesh = new THREE.Mesh( new THREE.SphereBufferGeometry( 4000, 128, 128), equirectMaterial);
   cubeMesh.material = equirectMaterial;
   cubeMesh.visible = true;
 
@@ -169,11 +169,15 @@ function runner() {
   let highlightNodes = [];
   let highlightLink = null;
 
-  const graph = ForceGraph3D()(document.getElementById('graph-3d')) 
+  const graph = ForceGraph3D({controlType: "orbit"})(document.getElementById('graph-3d')) 
     .graphData(gData)
+    .enableNodeDrag(false)
     .backgroundColor("#000000")
     .showNavInfo(false)
     .linkVisibility(false)
+  //.cooldownTime(Infinity)
+      .d3AlphaDecay(0.1)
+      .d3VelocityDecay(0.02)
     .cameraPosition({z: -2310, y: 135, x: -2200})
     .nodeThreeObject(node => {
       if (node.id % 2 == 0) {
@@ -235,7 +239,7 @@ function runner() {
         })
     .onNodeClick(node => {
       // Aim at node from outside it
-      const distance = 32;
+      const distance = 128;
       const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
 
       graph.cameraPosition(
@@ -347,6 +351,14 @@ function runner() {
   object2.rotation.y = Math.PI / 2;
   scene.add( object2 );
 
+  var radius = 4000;
+var radials = 16;
+var circles = 8;
+var divisions = 256;
+
+var helper = new THREE.PolarGridHelper( radius, radials, circles, divisions, 0x222222, 0x262626  );
+  helper.position.y = -0.005;
+scene.add( helper );
 
 
 /*  {
